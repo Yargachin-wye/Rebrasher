@@ -17,31 +17,38 @@ public class TestColor : MonoBehaviour
 
     [Header("Compute Shader")]
     [SerializeField] private ComputeShader replaceColorShader;
-    [SerializeField] private string kernelName = "ReplaceColors";
+    [SerializeField] private string _kernelName = "ReplaceColors";
 
-    public List<Color> _colorsK = new List<Color>();
-    public List<Color> _colorsV = new List<Color>();
+    private List<Color> _colorsK = new List<Color>();
+    private List<Color> _colorsV = new List<Color>();
     void Start()
     {
         GetColos();
         int bufSize = _colorsK.Count;
-        int kernel = replaceColorShader.FindKernel(kernelName);
+
+        int kernel = replaceColorShader.FindKernel(_kernelName);
+
         uint thX, thY, thZ;
         replaceColorShader.GetKernelThreadGroupSizes(kernel, out thX, out thY, out thZ);
-
-        ComputeBuffer colorsK = new ComputeBuffer(bufSize, sizeof(float) * 4);
-        colorsK.SetData(_colorsK);
-        ComputeBuffer colorsV = new ComputeBuffer(bufSize, 4 * 4);
-        colorsV.SetData(_colorsV);
 
         Texture2D assetFramesMask = Resources.Load<Texture2D>(_nameFileFramesMask);
         Texture2D assetFrames = Resources.Load<Texture2D>(_nameFileFrames);
 
         replaceColorShader.SetTexture(kernel, "framesMask", assetFramesMask);
+        replaceColorShader.SetTexture(kernel, "frames", assetFrames);
+
+        ComputeBuffer colorsK = new ComputeBuffer(bufSize, sizeof(float) * 4);
+        colorsK.SetData(_colorsK);
+        replaceColorShader.SetBuffer(kernel, "colorsK", colorsK);
+
+        ComputeBuffer colorsV = new ComputeBuffer(bufSize, sizeof(float) * 4);
+        colorsV.SetData(_colorsV);
+        replaceColorShader.SetBuffer(kernel, "colorsV", colorsV);
+
+        replaceColorShader.SetInt( "iter", _colorsV.Count);
+
 
         replaceColorShader.Dispatch(kernel, 1, 1, 1);
-
-        
         //Rebrash(colors);
     }
     void GetColos()
