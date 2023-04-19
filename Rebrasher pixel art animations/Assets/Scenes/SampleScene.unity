@@ -386,7 +386,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 2.38
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -427,6 +427,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1478810880}
   - component: {fileID: 1478810881}
+  - component: {fileID: 1478810882}
   m_Layer: 0
   m_Name: Test_arm
   m_TagString: Untagged
@@ -456,7 +457,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478810878}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b9518d339507d84d80edd88b0f9a939, type: 3}
   m_Name: 
@@ -467,6 +468,30 @@ MonoBehaviour:
   _maskSize: {x: 4, y: 20}
   _nameFilePaletteMask: sp_arm_1
   _nameFilePalette: p_arm_1_07
+  replaceColorShader: {fileID: 0}
+  kernelName: ReplaceColors
+  _colorsK: []
+  _colorsV: []
+--- !u!114 &1478810882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478810878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11a95c6a7ef36064d9b891f67f78744a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _framesSize: {x: 0, y: 0}
+  _nameFileFramesMask: s_arm_1
+  _nameFileFrames: arm_1
+  _maskSize: {x: 0, y: 0}
+  _nameFilePaletteMask: sp_arm_1
+  _nameFilePalette: p_arm_1_01
+  replaceColorShader: {fileID: 7200000, guid: b28e8ea23e531464cb4ae05d45d53f61, type: 3}
+  kernelName: ReplaceColors
 --- !u!1 &1928761824
 GameObject:
   m_ObjectHideFlags: 0
@@ -483,7 +508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1928761825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502,6 +527,10 @@ MonoBehaviour:
   _maskSize: {x: 5, y: 6}
   _nameFilePaletteMask: sp_body
   _nameFilePalette: p_body
+  replaceColorShader: {fileID: 0}
+  kernelName: ReplaceColors
+  _colorsK: []
+  _colorsV: []
 --- !u!4 &1928761826
 Transform:
   m_ObjectHideFlags: 0

@@ -15,14 +15,41 @@ public class TestColor : MonoBehaviour
     [SerializeField] private string _nameFilePaletteMask = "PaletteMask";
     [SerializeField] private string _nameFilePalette = "Palette";
 
+    [Header("Compute Shader")]
+    [SerializeField] private ComputeShader replaceColorShader;
+    [SerializeField] private string kernelName = "ReplaceColors";
 
+    public List<Color> _colorsK = new List<Color>();
+    public List<Color> _colorsV = new List<Color>();
     void Start()
+    {
+        GetColos();
+        int bufSize = _colorsK.Count;
+        int kernel = replaceColorShader.FindKernel(kernelName);
+        uint thX, thY, thZ;
+        replaceColorShader.GetKernelThreadGroupSizes(kernel, out thX, out thY, out thZ);
+
+        ComputeBuffer colorsK = new ComputeBuffer(bufSize, sizeof(float) * 4);
+        colorsK.SetData(_colorsK);
+        ComputeBuffer colorsV = new ComputeBuffer(bufSize, 4 * 4);
+        colorsV.SetData(_colorsV);
+
+        Texture2D assetFramesMask = Resources.Load<Texture2D>(_nameFileFramesMask);
+        Texture2D assetFrames = Resources.Load<Texture2D>(_nameFileFrames);
+
+        replaceColorShader.SetTexture(kernel, "framesMask", assetFramesMask);
+
+        replaceColorShader.Dispatch(kernel, 1, 1, 1);
+
+        
+        //Rebrash(colors);
+    }
+    void GetColos()
     {
         Texture2D assetPaletteMask = Resources.Load<Texture2D>(_nameFilePaletteMask);
         Texture2D assetPalette = Resources.Load<Texture2D>(_nameFilePalette);
 
         Dictionary<Color, Color> colors = new Dictionary<Color, Color>();
-
         for (int y = 0; y < _maskSize.y; y++)
         {
             for (int x = 0; x < _maskSize.x; x++)
@@ -36,10 +63,11 @@ public class TestColor : MonoBehaviour
                 if (!colors.ContainsKey(maskColor))
                 {
                     colors.Add(maskColor, frameColor);
+                    _colorsK.Add(maskColor);
+                    _colorsV.Add(frameColor);
                 }
             }
         }
-        Rebrash(colors);
     }
     private void RebrashColor(Color colorKey, Color colorVal)
     {
@@ -60,7 +88,6 @@ public class TestColor : MonoBehaviour
                 if (assetFramesMask.GetPixel(x, y) == colorKey)
                 {
                     assetFrames.SetPixel(x, y, colorVal);
-                    //Debug.Log(x + "; " + y);
                 }
             }
         }

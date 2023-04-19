@@ -1,0 +1,33 @@
+#pragma kernel ReplaceColors
+
+Texture2D<float4> framesMask;
+Texture2D<float4> frames;
+RWTexture2D<float4> res;
+
+RWStructuredBuffer<float4> colorsK;
+RWStructuredBuffer<float4> colorsV;
+
+[numthreads(10, 3, 1)]
+void ReplaceColors(uint3 id : SV_DispatchThreadID)
+{
+    float4 maskColor = paletteMask[id.xy];
+    float4 frameColor = palette[id.xy];
+
+    for (int y = 0; y < frames.height; y++)
+    {
+        for (int x = 0; x < frames.width; x++)
+        {
+            float4 color = framesMask[int2(x, y)];
+            if (color.a < 1)
+            {
+                res[int2(x, y)] = float4(0, 0, 0, 0);
+                continue;
+            }
+
+            if (color == maskColor)
+            {
+                res[int2(x, y)] = frameColor;
+            }
+        }
+    }
+}
