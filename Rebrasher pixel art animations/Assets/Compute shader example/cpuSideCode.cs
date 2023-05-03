@@ -105,44 +105,9 @@ public class cpuSideCode : MonoBehaviour {
 		_shader.SetBuffer(kiCalc, "colors", colorsBuffer);				// setting color palette buffer
 		_shader.SetTexture(kiCalc, "textureOut", outputTexture);		// setting texture
 
-		/*
-
-		Note:
-		One compute shader file can have different kernels. They can share buffers, but you would have to call SetBuffer() for each kernel
-		For example:
-		_shader.SetBuffer(kernel1, "someBuffer", bufferToShare);
-		_shader.SetBuffer(kernel2, "someBuffer", bufferToShare);
-		
-		*/
 	}
 	static void calcFractal(){
-		_shader.Dispatch(kiCalc, 32, 32, 1);							// Dispatch() method runs its kernel
-		/*
-			What do the "32, 32, 1" numbers mean? They set the amount of thread groups in X, Y, Z dimensions
-			If you open compute shader code of this example, you will see, that our "pixelCalc" kernel has [numthreads(32,32,1)] line,
-			and this line means that each group has that much threads per group
-			
-			The most important thing about these numbers is that kernel has uint3 id : SV_DispatchThreadID parameter
-			and this id parameter contains the three dimentional index of the current thread being calculated
-
-			Both Dispatch() and [numthread] have X, Y, Z parameters, and they multiply
-			In our case we have (32, 32, 1) groups from Dispatch() and (32, 32, 1) threads per group
-			so there will be runned (32 * 32, 32 * 32, 1) = (1024, 1024, 1) threads
-			or one thread for each pixel of 1024 x 1024 texture
-			we could have Dispatch(kiCalc, 1024, 1024, 1) and [numthreads(1, 1, 1)]
-			or Dispatch(kiCalc, 256, 8, 1) and [numthreads(4, 128, 1)]
-			it would give us the same (1024, 1024, 1) number of threads
-			and inside compute shader we have access to the current thread index through the uint3 id : SV_DispatchThreadID parameter
-			In our case we have 1024 threads at X dimension and 1024 threads at Y dimension, so inside compute shader:
-			id.x will have values in [0, 1024] range
-			id.y will have values in [0, 1024] range
-			And therefore we will be able to set the correct pixel's color based on this id parameter
-
-			for more information about thread numbers, check this msdn link:
-
-			https://msdn.microsoft.com/en-us/library/windows/desktop/ff471442(v=vs.85).aspx
-			
-		*/
+		_shader.Dispatch(kiCalc, 32, 32, 1);
 	}
 	void Update(){
 		input();					// cheking player's input

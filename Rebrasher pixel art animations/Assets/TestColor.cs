@@ -6,63 +6,80 @@ using System;
 public class TestColor : MonoBehaviour
 {
     [Header("Frames")]
-    [SerializeField] private Vector2 _framesSize;
-    [SerializeField] private string _nameFileFramesMask = "FramesMask";
+
+    [SerializeField] private string _FileFMaskArm1 = "mask_arm_1";
+    [SerializeField] private string _FileFMaskLeg1 = "mask_leg_1";
+    [SerializeField] private string _FileFMaskBody = "mask_body";
+    [SerializeField] private string _FileFMaskLeg2 = "mask_leg_2";
+
     [SerializeField] private string _nameFileFrames = "Frames";
 
-    [Header("Mask")]
-    [SerializeField] private Vector2 _maskSize;
-    [SerializeField] private string _nameFilePaletteMask = "PaletteMask";
-    [SerializeField] private string _nameFilePalette = "Palette";
+    [Header("Palette")]
+
+    [SerializeField] private string _FilePMaskArm1 = "PaletteMask";
+    [SerializeField] private string _FilePArm1 = "Palette";
+
+    [SerializeField] private string _FilePMaskLeg1 = "PaletteMask";
+    [SerializeField] private string _FilePLeg1 = "Palette";
+
+    [SerializeField] private string _FilePMaskBody = "PaletteMask";
+    [SerializeField] private string _FilePBody = "Palette";
+
+    [SerializeField] private string _FilePMaskLeg2 = "PaletteMask";
+    [SerializeField] private string _FilePLeg2 = "Palette";
 
     [Header("Compute Shader")]
+
     [SerializeField] private ComputeShader replaceColorShader;
-    [SerializeField] private string _kernelName = "ReplaceColors";
+    private string _kernelName = "ReplaceColors";
 
     private List<Color> _colorsK = new List<Color>();
     private List<Color> _colorsV = new List<Color>();
+    int kernel;
+    bool endRebrash = false;
     void Start()
     {
-        GetColos();
-        int bufSize = _colorsK.Count;
+        kernel = replaceColorShader.FindKernel(_kernelName);
 
-        int kernel = replaceColorShader.FindKernel(_kernelName);
-
-        uint thX, thY, thZ;
-        replaceColorShader.GetKernelThreadGroupSizes(kernel, out thX, out thY, out thZ);
-
-        Texture2D assetFramesMask = Resources.Load<Texture2D>(_nameFileFramesMask);
         Texture2D assetFrames = Resources.Load<Texture2D>(_nameFileFrames);
+        ComputeBuffer texture = new ComputeBuffer(assetFrames.width * assetFrames.height, sizeof(float) * 4);
+        Vector4[] data = new Vector4[assetFrames.width * assetFrames.height];
+        texture.SetData(data);
+        replaceColorShader.SetBuffer(kernel, "frames", texture);
 
-        replaceColorShader.SetTexture(kernel, "framesMask", assetFramesMask);
-        replaceColorShader.SetTexture(kernel, "frames", assetFrames);
+        Dispatch(_FilePMaskLeg2, _FilePLeg2, _FileFMaskLeg2);
+        Dispatch(_FilePMaskBody, _FilePBody, _FileFMaskBody);
+        Dispatch(_FilePMaskLeg1, _FilePLeg1, _FileFMaskLeg1);
+        Dispatch(_FilePMaskArm1, _FilePArm1, _FileFMaskArm1);
 
-        ComputeBuffer colorsK = new ComputeBuffer(bufSize, sizeof(float) * 4);
-        colorsK.SetData(_colorsK);
-        replaceColorShader.SetBuffer(kernel, "colorsK", colorsK);
+        texture.GetData(data);
 
-        ComputeBuffer colorsV = new ComputeBuffer(bufSize, sizeof(float) * 4);
-        colorsV.SetData(_colorsV);
-        replaceColorShader.SetBuffer(kernel, "colorsV", colorsV);
+        Color[] colors = new Color[assetFrames.width * assetFrames.height];
+        for (int i = 0; i < data.Length; i++)
+        {
+            colors[i] = new Color(data[i].x, data[i].y, data[i].z, data[i].w);
+        }
+        assetFrames.SetPixels(colors);
+        assetFrames.Apply();
 
-        replaceColorShader.SetInt( "iter", _colorsV.Count);
-
-
-        replaceColorShader.Dispatch(kernel, 1, 1, 1);
-        //Rebrash(colors);
+        endRebrash = true;
+        texture.Dispose();
     }
-    void GetColos()
+    IEnumerator GetColors(string nameFilePaletteMask, string nameFilePalette)
     {
-        Texture2D assetPaletteMask = Resources.Load<Texture2D>(_nameFilePaletteMask);
-        Texture2D assetPalette = Resources.Load<Texture2D>(_nameFilePalette);
+        endRebrash = false;
+        _colorsK = new List<Color>();
+        _colorsV = new List<Color>();
+        Texture2D paletteMask = Resources.Load<Texture2D>(nameFilePaletteMask);
+        Texture2D palette = Resources.Load<Texture2D>(nameFilePalette);
 
         Dictionary<Color, Color> colors = new Dictionary<Color, Color>();
-        for (int y = 0; y < _maskSize.y; y++)
+        for (int y = 0; y < palette.height; y++)
         {
-            for (int x = 0; x < _maskSize.x; x++)
+            for (int x = 0; x < palette.width; x++)
             {
-                Color maskColor = assetPaletteMask.GetPixel(x, y);
-                Color frameColor = assetPalette.GetPixel(x, y);
+                Color maskColor = paletteMask.GetPixel(x, y);
+                Color frameColor = palette.GetPixel(x, y);
 
                 if (maskColor.a < 1)
                     continue;
@@ -75,36 +92,28 @@ public class TestColor : MonoBehaviour
                 }
             }
         }
-    }
-    private void RebrashColor(Color colorKey, Color colorVal)
-    {
-        Texture2D assetFramesMask = Resources.Load<Texture2D>(_nameFileFramesMask);
-        Texture2D assetFrames = Resources.Load<Texture2D>(_nameFileFrames);
 
-        for (int y = 0; y < _framesSize.y; y++)
-        {
-            for (int x = 0; x < _framesSize.x; x++)
-            {
-                Color color = assetFramesMask.GetPixel(x, y);
-                if (color.a < 1)
-                {
-                    assetFrames.SetPixel(x, y, Color.clear);
-                    continue;
-                }
+        int bufSize = _colorsK.Count;
+        ComputeBuffer K = new ComputeBuffer(_colorsK.Count, sizeof(float) * 4);
+        ComputeBuffer V = new ComputeBuffer(_colorsK.Count, sizeof(float) * 4);
 
-                if (assetFramesMask.GetPixel(x, y) == colorKey)
-                {
-                    assetFrames.SetPixel(x, y, colorVal);
-                }
-            }
-        }
-        assetFrames.Apply();
+        K.SetData(_colorsK);
+        V.SetData(_colorsV);
+        replaceColorShader.SetBuffer(kernel, "Kp", K);
+        replaceColorShader.SetBuffer(kernel, "Vp", V);
+        replaceColorShader.SetInt("iter", _colorsK.Count);
+        yield return new WaitUntil(() => endRebrash);
+        Debug.Log(_colorsK.Count);
+
+        K.Release();
+        V.Release();
     }
-    private void Rebrash(Dictionary<Color, Color> colors)
+    void Dispatch(string maskPalete, string palete, string FrMask)
     {
-        foreach(var color in colors)
-        {
-            RebrashColor(color.Key, color.Value);
-        }
+        StartCoroutine(GetColors(maskPalete, palete));
+        Texture2D asset = Resources.Load<Texture2D>(FrMask);
+        replaceColorShader.SetTexture(kernel, "mask", asset);
+
+        replaceColorShader.Dispatch(kernel, 1, 1, 1);//________________
     }
 }
