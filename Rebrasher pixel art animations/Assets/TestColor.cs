@@ -9,8 +9,10 @@ public class TestColor : MonoBehaviour
 
     [SerializeField] private string _FileFMaskArm1 = "mask_arm_1";
     [SerializeField] private string _FileFMaskLeg1 = "mask_leg_1";
+    [SerializeField] private string _FileFMaskHead = "mask_head";
     [SerializeField] private string _FileFMaskBody = "mask_body";
     [SerializeField] private string _FileFMaskLeg2 = "mask_leg_2";
+    [SerializeField] private string _FileFMaskArm2 = "mask_arm_1";
 
     [SerializeField] private string _nameFileFrames = "Frames";
 
@@ -22,11 +24,17 @@ public class TestColor : MonoBehaviour
     [SerializeField] private string _FilePMaskLeg1 = "PaletteMask";
     [SerializeField] private string _FilePLeg1 = "Palette";
 
+    [SerializeField] private string _FilePMaskHead = "PaletteMask";
+    [SerializeField] private string _FilePHead = "Palette";
+
     [SerializeField] private string _FilePMaskBody = "PaletteMask";
     [SerializeField] private string _FilePBody = "Palette";
 
     [SerializeField] private string _FilePMaskLeg2 = "PaletteMask";
     [SerializeField] private string _FilePLeg2 = "Palette";
+
+    [SerializeField] private string _FilePMaskArm2 = "PaletteMask";
+    [SerializeField] private string _FilePArm2 = "Palette";
 
     [Header("Compute Shader")]
 
@@ -37,7 +45,7 @@ public class TestColor : MonoBehaviour
     private List<Color> _colorsV = new List<Color>();
     int kernel;
     bool endRebrash = false;
-    void Start()
+    public void Rebrash()
     {
         kernel = replaceColorShader.FindKernel(_kernelName);
 
@@ -47,8 +55,10 @@ public class TestColor : MonoBehaviour
         texture.SetData(data);
         replaceColorShader.SetBuffer(kernel, "frames", texture);
 
+        Dispatch(_FilePMaskArm2, _FilePArm2, _FileFMaskArm2);
         Dispatch(_FilePMaskLeg2, _FilePLeg2, _FileFMaskLeg2);
         Dispatch(_FilePMaskBody, _FilePBody, _FileFMaskBody);
+        Dispatch(_FilePMaskHead, _FilePHead, _FileFMaskHead);
         Dispatch(_FilePMaskLeg1, _FilePLeg1, _FileFMaskLeg1);
         Dispatch(_FilePMaskArm1, _FilePArm1, _FileFMaskArm1);
 
