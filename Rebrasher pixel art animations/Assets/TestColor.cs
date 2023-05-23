@@ -19,21 +19,17 @@ public class TestColor : MonoBehaviour
     [Header("Palette")]
 
     [SerializeField] private string _FilePMaskArm1 = "PaletteMask";
-    [SerializeField] private string _FilePArm1 = "Palette";
-
     [SerializeField] private string _FilePMaskLeg1 = "PaletteMask";
-    [SerializeField] private string _FilePLeg1 = "Palette";
-
     [SerializeField] private string _FilePMaskHead = "PaletteMask";
-    [SerializeField] private string _FilePHead = "Palette";
-
     [SerializeField] private string _FilePMaskBody = "PaletteMask";
-    [SerializeField] private string _FilePBody = "Palette";
-
     [SerializeField] private string _FilePMaskLeg2 = "PaletteMask";
-    [SerializeField] private string _FilePLeg2 = "Palette";
-
     [SerializeField] private string _FilePMaskArm2 = "PaletteMask";
+
+    [SerializeField] private string _FilePArm1 = "Palette";
+    [SerializeField] private string _FilePLeg1 = "Palette";
+    [SerializeField] private string _FilePHead = "Palette";
+    [SerializeField] private string _FilePBody = "Palette";
+    [SerializeField] private string _FilePLeg2 = "Palette";
     [SerializeField] private string _FilePArm2 = "Palette";
 
     [Header("Compute Shader")]
@@ -74,6 +70,88 @@ public class TestColor : MonoBehaviour
 
         endRebrash = true;
         texture.Dispose();
+    }
+
+    public void RebrashCPU()
+    {
+        Texture2D assetFrames = Resources.Load<Texture2D>(_nameFileFrames);
+
+        Texture2D asset1 = Resources.Load<Texture2D>(_FileFMaskArm1);
+        Dictionary<Color, Color>  colors1 = GetColorsD(_FilePMaskArm1, _FilePArm1);
+        Texture2D asset2 = Resources.Load<Texture2D>(_FileFMaskLeg1);
+        Dictionary<Color, Color> colors2 = GetColorsD(_FilePMaskLeg1, _FilePLeg1);
+        Texture2D asset3 = Resources.Load<Texture2D>(_FileFMaskHead);
+        Dictionary<Color, Color> colors3 = GetColorsD(_FilePMaskHead, _FilePHead);
+        Texture2D asset4 = Resources.Load<Texture2D>(_FileFMaskBody);
+        Dictionary<Color, Color> colors4 = GetColorsD(_FilePMaskBody, _FilePBody);
+        Texture2D asset5 = Resources.Load<Texture2D>(_FileFMaskLeg2);
+        Dictionary<Color, Color> colors5 = GetColorsD(_FilePMaskLeg2, _FilePLeg2);
+        Texture2D asset6 = Resources.Load<Texture2D>(_FileFMaskArm2);
+        Dictionary<Color, Color> colors6 = GetColorsD(_FilePMaskArm2, _FilePArm2);
+
+        for (int x = 0; x <= assetFrames.width; x++)
+        {
+            for(int y = 0; y <= assetFrames.height; y++)
+            {
+                if (asset1.GetPixel(x, y).a != 0 && colors1.ContainsKey(asset1.GetPixel(x, y)) )
+                {
+                    assetFrames.SetPixel(x, y, colors1[asset1.GetPixel(x, y)]);
+                    continue;
+                }
+                if (asset2.GetPixel(x, y).a != 0 && colors2.ContainsKey(asset2.GetPixel(x, y)))
+                {
+                    assetFrames.SetPixel(x, y, colors2[asset2.GetPixel(x, y)]);
+                    continue;
+                }
+                if (asset3.GetPixel(x, y).a != 0 && colors3.ContainsKey(asset3.GetPixel(x, y)))
+                {
+                    assetFrames.SetPixel(x, y, colors3[asset3.GetPixel(x, y)]);
+                    continue;
+                }
+                if (asset4.GetPixel(x, y).a != 0 && colors4.ContainsKey(asset4.GetPixel(x, y)))
+                {
+                    assetFrames.SetPixel(x, y, colors4[asset4.GetPixel(x, y)]);
+                    continue;
+                }
+                if (asset5.GetPixel(x, y).a != 0 && colors5.ContainsKey(asset5.GetPixel(x, y)))
+                {
+                    assetFrames.SetPixel(x, y, colors5[asset5.GetPixel(x, y)]);
+                    continue;
+                }
+                if (asset6.GetPixel(x, y).a != 0 && colors6.ContainsKey(asset6.GetPixel(x, y)))
+                {
+                    assetFrames.SetPixel(x, y, colors6[asset6.GetPixel(x, y)]);
+                    continue;
+                }
+                assetFrames.SetPixel(x, y, Color.clear);
+            }
+        }
+        assetFrames.Apply();
+    }
+    Dictionary<Color, Color> GetColorsD(string nameFilePaletteMask, string nameFilePalette)
+    {
+        endRebrash = false;
+        Texture2D paletteMask = Resources.Load<Texture2D>(nameFilePaletteMask);
+        Texture2D palette = Resources.Load<Texture2D>(nameFilePalette);
+
+        Dictionary<Color, Color> colors = new Dictionary<Color, Color>();
+        for (int y = 0; y < palette.height; y++)
+        {
+            for (int x = 0; x < palette.width; x++)
+            {
+                Color maskColor = paletteMask.GetPixel(x, y);
+                Color frameColor = palette.GetPixel(x, y);
+
+                if (maskColor.a < 1)
+                    continue;
+
+                if (!colors.ContainsKey(maskColor))
+                {
+                    colors.Add(maskColor, frameColor);
+                }
+            }
+        }
+        return colors;
     }
     IEnumerator GetColors(string nameFilePaletteMask, string nameFilePalette)
     {
