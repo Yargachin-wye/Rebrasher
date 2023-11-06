@@ -270,7 +270,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1820899950, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
+  m_Sprite: {fileID: 636757247, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -459,7 +459,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 1820899950, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
+  m_Sprite: {fileID: -248349452, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -930,7 +930,7 @@ MonoBehaviour:
   _FilePMaskBody: sp_body
   _FilePMaskLeg2: sp_leg_2
   _FilePMaskArm2: sp_arm_2
-  _FilePArm1: p_arm_1_01
+  _FilePArm1: p_arm_1_01,
   _FilePLeg1: p_leg_1_01
   _FilePHead: p_head_01
   _FilePBody: p_body_01
