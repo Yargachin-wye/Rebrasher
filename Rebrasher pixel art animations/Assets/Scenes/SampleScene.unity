@@ -270,7 +270,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 636757247, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
+  m_Sprite: {fileID: 1820899950, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -459,7 +459,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -248349452, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
+  m_Sprite: {fileID: 1820899950, guid: 049f8b29911ef2a43839d20efef5c7d7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -632,12 +632,12 @@ GameObject:
   - component: {fileID: 1629829828}
   - component: {fileID: 1629829827}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ButtonRebrash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1629829826
 RectTransform:
   m_ObjectHideFlags: 0
@@ -930,12 +930,12 @@ MonoBehaviour:
   _FilePMaskBody: sp_body
   _FilePMaskLeg2: sp_leg_2
   _FilePMaskArm2: sp_arm_2
-  _FilePArm1: p_arm_1_01,
-  _FilePLeg1: p_leg_1_01
-  _FilePHead: p_head_01
-  _FilePBody: p_body_01
-  _FilePLeg2: p_leg_2_01
-  _FilePArm2: p_arm_2_01
+  _FilePArm1: p_arm_1_03
+  _FilePLeg1: p_leg_1_03
+  _FilePHead: p_head_03
+  _FilePBody: p_body_03
+  _FilePLeg2: p_leg_2_03
+  _FilePArm2: p_arm_2_03
   replaceColorShader: {fileID: 7200000, guid: b28e8ea23e531464cb4ae05d45d53f61, type: 3}
 --- !u!4 &1928761826
 Transform:
@@ -1112,7 +1112,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Rebash cpu
+  m_text: Rebash
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
